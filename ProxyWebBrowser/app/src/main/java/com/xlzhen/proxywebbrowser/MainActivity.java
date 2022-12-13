@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private AgentWeb agentWeb;
     private String previousUrl;
     private String realUrl;
-
+    private static final String remoteHost ="192.168.5.117:60061";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                         String url = request.getUrl().toString();
 
                         if (url.startsWith("http")) {
-                            if (!url.startsWith(realUrl) && !url.startsWith("http://192.168.5.116:60061")) {
+                            if (!url.startsWith(realUrl) && !url.startsWith("http://"+remoteHost)) {
                                 previousUrl = realUrl;
                                 realUrl = url.substring(0, url.indexOf("/", 9));
                             }
@@ -119,14 +119,14 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .createAgentWeb()
                 .ready()
-                .go("http://192.168.5.117:60061?host_url=" + realUrl);
+                .go("http://"+remoteHost+"?host_url=" + realUrl);
 
     }
 
     @NonNull
     private String parseUrl(String url) {
         String[] urls = url.split("/");
-        url = url.replace(urls[2], "192.168.5.116:60061");
+        url = url.replace(urls[2], remoteHost);
         url = url.replace("https", "http");
         Log.v("url", url);
         if (Uri.parse(url).getQueryParameterNames().size() > 0) {
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             url += "?";
         }
-        url+=String.format("host_url=%s%s&previousUrl=%s", realUrl, urls[2].equals("192.168.5.116:60061") ? ""
+        url+=String.format("host_url=%s%s&previousUrl=%s", realUrl, urls[2].equals(remoteHost) ? ""
                 : String.format("&real_url=%s//%s", urls[0], urls[2]),previousUrl);
         return url;
     }
